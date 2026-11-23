@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>슬로엘 직원 앱</title>
+<style>
+:root{--bg:#fffbe6;--card:#fffef6;--tx:#4a4130;--mut:#9a8f73;--ac:#f6d365;--acx:#4a4130;--ln:#f3e6a8;--today:#fff0b0;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2b271a;--card:#383222;--tx:#fdf3cf;--mut:#c2b78f;--ac:#e9c46a;--acx:#2b271a;--ln:#4d452d;--today:#4a4020;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#2b271a;--card:#383222;--tx:#fdf3cf;--mut:#c2b78f;--ac:#e9c46a;--acx:#2b271a;--ln:#4d452d;--today:#4a4020;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;font-size:15px;line-height:1.45;padding-bottom:90px}
+header{padding:18px 16px 8px}
+h1{margin:0;font-size:22px}
+.sub{color:var(--mut);font-size:12.5px;margin-top:2px}
+nav{display:flex;gap:8px;padding:8px 16px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+nav button{flex:1;padding:10px;border:1px solid var(--ln);background:var(--card);color:var(--tx);border-radius:12px;font-size:15px;font-weight:600}
+nav button.on{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+main{padding:4px 16px}
+.week{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
+.week b{font-size:16px}
+.week button{width:40px;height:36px;border:1px solid var(--ln);background:var(--card);color:var(--tx);border-radius:10px;font-size:16px}
+.day{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.day.today{background:var(--today);border-color:var(--ac)}
+.dh{display:flex;justify-content:space-between;align-items:center;font-weight:700}
+.dh small{color:var(--mut);font-weight:500}
+.sh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-top:1px dashed var(--ln);margin-top:6px}
+.sh .n{font-weight:600}
+.sh .t{color:var(--mut);font-size:13px}
+.sh .nt{color:var(--mut);font-size:12.5px}
+.x{border:0;background:none;color:var(--mut);font-size:15px;padding:4px 8px}
+.empty{color:var(--mut);font-size:13px;margin-top:4px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px}
+.chips button{white-space:nowrap;border:1px solid var(--ln);background:var(--card);color:var(--tx);border-radius:999px;padding:6px 13px;font-size:13.5px}
+.chips button.on{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+.cat{font-size:13px;color:var(--ac);font-weight:700;margin:12px 0 6px}
+.mi{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:11px 12px;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px}
+.mi .n{font-weight:700}
+.mi .d{color:var(--mut);font-size:13px;margin-top:2px}
+.mi .p{font-weight:700;white-space:nowrap;text-align:right}
+.mi .ed{display:block;color:var(--mut);font-size:12px;margin-top:6px;border:0;background:none;padding:0;margin-left:auto}
+.fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ac);color:var(--acx);border:0;border-radius:999px;padding:14px 20px;font-size:15px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;z-index:20}
+.sheet.open{display:flex}
+.panel{background:var(--card);width:100%;border-radius:18px 18px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:90%;overflow:auto}
+.panel h2{margin:0 0 10px;font-size:17px}
+label{display:block;font-size:12.5px;color:var(--mut);margin:9px 0 3px}
+input,textarea{width:100%;padding:10px;border:1px solid var(--ln);border-radius:10px;background:var(--bg);color:var(--tx);font-size:16px;font-family:inherit}
+.row{display:flex;gap:8px}.row>div{flex:1}
+.btns{display:flex;gap:8px;margin-top:14px}
+.btns button{flex:1;padding:12px;border-radius:12px;border:1px solid var(--ln);background:var(--bg);color:var(--tx);font-size:15px;font-weight:600}
+.btns .ok{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+.note{background:var(--today);border-radius:10px;padding:8px 10px;font-size:12.5px;margin:6px 0 10px}
+.cal{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:10px;margin-bottom:12px}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}.ch b{font-size:16px}
+.ch button{width:40px;height:34px;border:1px solid var(--ln);background:var(--bg);color:var(--tx);border-radius:10px;font-size:16px}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.cg .w{font-size:11.5px;color:var(--mut);padding:2px 0}
+.cg button.c{border:0;background:none;color:var(--tx);border-radius:12px;padding:5px 0 3px;min-height:46px;font-size:14px}
+.c.o{opacity:.35}.c.t{background:var(--today);font-weight:700}.c.s{outline:2px solid var(--ac)}
+.c i{display:block;font-style:normal;font-size:10.5px;color:#4a4130;background:#cfe8c4;border-radius:8px;margin:2px 4px 0}
+.day,.mi,.cal{box-shadow:0 2px 8px rgba(246,211,101,.25)}
+body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:46px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='46' viewBox='0 0 60 46'%3E%3Cpath d='M3 46Q2 28 9 16Q10 30 13 46Z M30 46Q32 26 40 12Q38 32 38 46Z' fill='%23a8d5a0'/%3E%3Cpath d='M16 46Q14 22 22 6Q24 28 24 46Z M44 46Q46 32 53 22Q52 38 52 46Z' fill='%23c9e8bd'/%3E%3C/svg%3E") repeat-x bottom;pointer-events:none;z-index:1}
+.fab{z-index:3}
+select{width:100%;padding:10px;border:1px solid var(--ln);border-radius:10px;background:var(--bg);color:var(--tx);font-size:16px;font-family:inherit}
+.dots{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;margin-top:3px;min-height:9px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;vertical-align:middle}
+.dot.big{width:16px;height:16px;flex:none}
+.lg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--mut);margin:2px 0 8px}
+.lg .dot{margin-right:4px}
+.at{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px dashed var(--ln)}
+.an{flex:1;font-weight:700}.an small{font-weight:500;color:var(--mut)}
+.as{font-size:12.5px;color:var(--mut);font-weight:500}
+.ab{border:0;background:var(--ac);color:var(--acx);border-radius:10px;padding:9px 16px;font-size:14px;font-weight:700}
+.ab:disabled{opacity:.45}
+</style>
+</head>
+<body>
+<header><h1>🌼 슬로엘 직원 앱 🌿</h1><div class="sub">서울 송파구 오금로29길 12 1층</div></header>
+<nav><button id="t-sch" class="on">스케줄</button><button id="t-menu">메뉴</button></nav>
+<main id="main"></main>
+<button class="fab" id="fab">＋ 근무 추가</button>
+
+<div class="sheet" id="sheet"><div class="panel" id="panel"></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+var tab="sch", cat="전체", db=null, offline=false;
+var sel=ymd(new Date()), cm=new Date(new Date().getFullYear(),new Date().getMonth(),1);
+var shifts=[], menu=[], att=[];
+// ===== 영업시간 (실제 영업시간에 맞게 수정하세요) =====
+var HOURS={0:["10:00","21:00"],1:["10:00","21:00"],2:["10:00","16:00"],3:["10:00","21:00"],4:["10:00","21:00"],5:["10:00","21:00"],6:["10:00","21:00"]};
+function hrs(k){var p=k.split("-");return HOURS[new Date(+p[0],+p[1]-1,+p[2]).getDay()]}
+var STAFF=[{n:"김서영",r:"사장",c:"#f5d547"},{n:"김효정",r:"직원",c:"#f7a8b8"},{n:"최석주",r:"직원",c:"#8fd19e"},{n:"신재호",r:"직원",c:"#8cc5f2"}];
+function sc(n){var p=STAFF.find(function(x){return x.n===n});return p?p.c:"#cccccc"}
+function dots(names){var u=[];(names||[]).forEach(function(n){if(u.indexOf(n)<0)u.push(n)});return u.length?'<div class="dots">'+u.map(function(n){return '<span class="dot" style="background:'+sc(n)+'"></span>'}).join("")+"</div>":""}
+function hhmm(){var d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")}
+function renderAtt(){
+  var t=ymd(new Date());
+  var h='<div class="cal"><div class="ch"><b>오늘 출석체크</b><small style="color:var(--mut)">'+t+'</small></div>';
+  STAFF.forEach(function(p){
+    var r=att.find(function(a){return a.id===t+"_"+p.n});
+    var lab="출근",st="";
+    if(r&&!r.outT){lab="퇴근";st="출근 "+r.inT}
+    else if(r){lab="완료";st="출근 "+r.inT+" · 퇴근 "+r.outT}
+    h+='<div class="at"><span class="dot big" style="background:'+p.c+'"></span><div class="an">'+p.n+' <small>'+p.r+'</small><div class="as">'+st+'</div></div><button class="ab" data-a="att" data-n="'+p.n+'"'+(r&&r.outT?" disabled":"")+'>'+lab+'</button></div>';
+  });
+  return h+"</div>";
+}
+var DOW=["일","월","화","수","목","금","토"];
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function monday(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());var w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);return x}
+var wk=monday(new Date());
+var $=function(id){return document.getElementById(id)};
+
+function render(){
+  $("t-sch").className=tab==="sch"?"on":"";
+  $("t-menu").className=tab==="menu"?"on":"";
+  $("fab").textContent=tab==="sch"?"＋ 근무 추가":"＋ 메뉴 추가";
+  $("main").innerHTML=(offline?'<div class="note">저장소에 연결되지 않아 이 화면에서만 임시로 보입니다.</div>':"")+(tab==="sch"?renderSch():renderMenu());
+}
+
+function renderCal(){
+  var y=cm.getFullYear(),m=cm.getMonth(),start=new Date(y,m,1-new Date(y,m,1).getDay()),today=ymd(new Date()),cnt={};
+  shifts.forEach(function(s){(cnt[s.date]=cnt[s.date]||[]).push(s.name)});
+  var h='<div class="cal"><div class="ch"><button data-a="cprev">‹</button><b>'+y+"년 "+(m+1)+'월</b><button data-a="cnext">›</button></div><div class="lg">'+STAFF.map(function(p){return '<span><span class="dot" style="background:'+p.c+'"></span>'+p.n+"</span>"}).join("")+'</div><div class="cg">'+DOW.map(function(w){return '<div class="w">'+w+"</div>"}).join("");
+  for(var i=0;i<42;i++){
+    var d=new Date(start.getFullYear(),start.getMonth(),start.getDate()+i);
+    if(i>=35&&d.getMonth()!==m)break;
+    var k=ymd(d);
+    h+='<button class="c'+(d.getMonth()!==m?" o":"")+(k===today?" t":"")+(k===sel?" s":"")+'" data-a="cday" data-d="'+k+'">'+d.getDate()+dots(cnt[k])+"</button>";
+  }
+  return h+"</div></div>";
+}
+
+function renderSch(){
+  var h=renderAtt()+renderCal(),end=new Date(wk);end.setDate(end.getDate()+6);
+  h+='<div class="week"><button data-a="prev">‹</button><b>'+(wk.getMonth()+1)+"월 "+wk.getDate()+"일 – "+(end.getMonth()+1)+"월 "+end.getDate()+'일</b><button data-a="next">›</button></div>';
+  var today=ymd(new Date());
+  for(var i=0;i<7;i++){
+    var d=new Date(wk);d.setDate(d.getDate()+i);var k=ymd(d);
+    var list=shifts.filter(function(s){return s.date===k}).sort(function(a,b){return (a.start||"").localeCompare(b.start||"")});
+    h+='<div class="day'+(k===today?" today":"")+'"><div class="dh"><span>'+(d.getMonth()+1)+"/"+d.getDate()+" ("+DOW[d.getDay()]+')</span><small>'+list.length+'명 · '+hrs(k)[0]+"–"+hrs(k)[1]+'</small></div>';
+    if(!list.length)h+='<div class="empty">등록된 근무가 없어요</div>';
+    list.forEach(function(s){
+      var a=att.find(function(x){return x.id===s.date+"_"+s.name});
+      h+='<div class="sh"><div><span class="dot" style="background:'+sc(s.name)+'"></span> <span class="n">'+esc(s.name)+'</span> <span class="t">'+esc(s.start)+" – "+esc(s.end)+'</span>'+(a?'<div class="nt">✓ 출근 '+esc(a.inT)+(a.outT?" · 퇴근 "+esc(a.outT):"")+'</div>':"")+(s.note?'<div class="nt">'+esc(s.note)+'</div>':"")+'</div><button class="x" data-a="delshift" data-id="'+esc(s.id)+'">✕</button></div>';
+    });
+    h+="</div>";
+  }
+  return h;
+}
+
+function renderMenu(){
+  var cats=["전체"];
+  menu.forEach(function(m){if(m.category&&cats.indexOf(m.category)<0)cats.push(m.category)});
+  if(cats.indexOf(cat)<0)cat="전체";
+  var h='<div class="chips">'+cats.map(function(c){return '<button class="'+(c===cat?"on":"")+'" data-a="cat" data-c="'+esc(c)+'">'+esc(c)+"</button>"}).join("")+"</div>";
+  var items=menu.filter(function(m){return cat==="전체"||m.category===cat});
+  if(!items.length)return h+'<div class="empty">아직 등록된 메뉴가 없어요. 아래 버튼으로 추가해 주세요.</div>';
+  var groups={};items.forEach(function(m){var c=m.category||"기타";(groups[c]=groups[c]||[]).push(m)});
+  Object.keys(groups).forEach(function(c){
+    h+='<div class="cat">'+esc(c)+"</div>";
+    groups[c].forEach(function(m){
+      h+='<div class="mi"><div><div class="n">'+esc(m.name)+'</div>'+(m.desc?'<div class="d">'+esc(m.desc)+"</div>":"")+'</div><div class="p">'+(m.price!=null&&m.price!==""?Number(m.price).toLocaleString("ko-KR")+"원":"")+'<button class="ed" data-a="editmenu" data-id="'+esc(m.id)+'">수정</button></div></div>';
+    });
+  });
+  return h;
+}
+
+function openSheet(html){$("panel").innerHTML=html;$("sheet").className="sheet open"}
+function closeSheet(){$("sheet").className="sheet"}
+
+function shiftForm(){
+  openSheet('<h2>근무 추가</h2><label>날짜</label><input type="date" id="f-date" value="'+sel+'"><label>이름</label><select id="f-name">'+STAFF.map(function(p){return "<option>"+p.n+"</option>"}).join("")+'</select><div class="row"><div><label>시작</label><input type="time" id="f-start" value="'+hrs(sel)[0]+'"></div><div><label>종료</label><input type="time" id="f-end" value="'+hrs(sel)[1]+'"></div></div><label>메모 (선택)</label><input id="f-note" placeholder="예: 오픈, 마감"><div class="btns"><button data-a="close">취소</button><button class="ok" data-a="saveshift">저장</button></div>');
+}
+function menuForm(m){
+  m=m||{};
+  var cats=[];menu.forEach(function(x){if(x.category&&cats.indexOf(x.category)<0)cats.push(x.category)});
+  openSheet('<h2>'+(m.id?"메뉴 수정":"메뉴 추가")+'</h2><label>카테고리</label><input id="m-cat" list="cats" value="'+esc(m.category)+'" placeholder="예: 커피, 디저트"><datalist id="cats">'+cats.map(function(c){return '<option value="'+esc(c)+'">'}).join("")+'</datalist><label>메뉴 이름</label><input id="m-name" value="'+esc(m.name)+'"><label>가격 (원)</label><input type="number" inputmode="numeric" id="m-price" value="'+esc(m.price)+'"><label>설명 (선택)</label><textarea id="m-desc" rows="2">'+esc(m.desc)+'</textarea><div class="btns">'+(m.id?'<button data-a="delmenu" data-id="'+esc(m.id)+'">삭제</button>':'<button data-a="close">취소</button>')+'<button class="ok" data-a="savemenu" data-id="'+esc(m.id||"")+'">저장</button></div>');
+}
+
+async function put(col,id,data){
+  if(db){
+    try{ if(id)await db.collection(col).doc(id).set(data); else await db.collection(col).add(data); return; }catch(e){offline=true}
+  }
+  var arr=col==="shifts"?shifts:col==="menu"?menu:att;
+  var row=Object.assign({id:id||("l"+Date.now())},data);
+  var i=arr.findIndex(function(x){return x.id===row.id});
+  if(i>=0)arr[i]=row;else arr.push(row);
+  render();
+}
+async function del(col,id){
+  if(db){try{await db.collection(col).doc(id).delete();return}catch(e){offline=true}}
+  var arr=col==="shifts"?shifts:col==="menu"?menu:att;
+  var i=arr.findIndex(function(x){return x.id===id});if(i>=0)arr.splice(i,1);render();
+}
+
+document.addEventListener("click",function(e){
+  var t=e.target.closest("button");if(!t)return;
+  if(t.id==="t-sch"){tab="sch";render();return}
+  if(t.id==="t-menu"){tab="menu";render();return}
+  if(t.id==="fab"){tab==="sch"?shiftForm():menuForm();return}
+  var a=t.getAttribute("data-a"),id=t.getAttribute("data-id");
+  if(a==="prev"){wk.setDate(wk.getDate()-7);render()}
+  else if(a==="next"){wk.setDate(wk.getDate()+7);render()}
+  else if(a==="cat"){cat=t.getAttribute("data-c");render()}
+  else if(a==="att"){
+    var nm=t.getAttribute("data-n"),td=ymd(new Date()),rid=td+"_"+nm,rr=att.find(function(x){return x.id===rid});
+    if(rr&&rr.outT)return;
+    if(!confirm(nm+"님 본인이 맞나요? "+(rr?"퇴근":"출근")+" 처리합니다."))return;
+    put("attendance",rid,{date:td,name:nm,inT:rr?rr.inT:hhmm(),outT:rr?hhmm():""});
+  }
+  else if(a==="cprev"){cm=new Date(cm.getFullYear(),cm.getMonth()-1,1);render()}
+  else if(a==="cnext"){cm=new Date(cm.getFullYear(),cm.getMonth()+1,1);render()}
+  else if(a==="cday"){sel=t.getAttribute("data-d");var p=sel.split("-");wk=monday(new Date(+p[0],+p[1]-1,+p[2]));render()}
+  else if(a==="close")closeSheet();
+  else if(a==="delshift"){if(confirm("이 근무를 삭제할까요?"))del("shifts",id)}
+  else if(a==="editmenu")menuForm(menu.find(function(x){return x.id===id}));
+  else if(a==="delmenu"){if(confirm("이 메뉴를 삭제할까요?")){del("menu",id);closeSheet()}}
+  else if(a==="saveshift"){
+    var n=$("f-name").value.trim();if(!n||!$("f-date").value){alert("날짜와 이름을 입력해 주세요");return}
+    put("shifts",null,{date:$("f-date").value,name:n,start:$("f-start").value,end:$("f-end").value,note:$("f-note").value.trim()});closeSheet();
+  }
+  else if(a==="savemenu"){
+    var mn=$("m-name").value.trim();if(!mn){alert("메뉴 이름을 입력해 주세요");return}
+    put("menu",id||null,{category:$("m-cat").value.trim()||"기타",name:mn,price:$("m-price").value===""?"":Number($("m-price").value),desc:$("m-desc").value.trim()});closeSheet();
+  }
+});
+document.addEventListener("change",function(e){if(e.target.id==="f-date"&&e.target.value){var h=hrs(e.target.value);$("f-start").value=h[0];$("f-end").value=h[1]}});
+$("sheet").addEventListener("click",function(e){if(e.target.id==="sheet")closeSheet()});
+
+render();
+(function(){
+  // ===== 여기에 Firebase 설정값을 붙여 넣으세요 =====
+  var FIREBASE_CONFIG={apiKey:"AIzaSyCdOCd0iH60PYrdlt_nZO-mt6s0mKe_xhA",authDomain:"slowel-12bfb.firebaseapp.com",projectId:"slowel-12bfb",storageBucket:"slowel-12bfb.firebasestorage.app",messagingSenderId:"159868253598",appId:"1:159868253598:web:7d301662a2a5204e30528f"};
+  // 직원용 비밀번호 (비워두면 없음). 간단한 잠금이라 완벽한 보안은 아니에요.
+  var PASSCODE="";
+  // ==================================================
+  try{
+    if(PASSCODE){
+      var ok=false;try{ok=localStorage.getItem("sloel-pass")===PASSCODE}catch(e){}
+      if(!ok){var p=prompt("직원 비밀번호를 입력하세요");if(p!==PASSCODE){document.body.innerHTML="<p style='padding:24px'>비밀번호가 맞지 않아요. 새로고침 후 다시 입력해 주세요.</p>";return}try{localStorage.setItem("sloel-pass",p)}catch(e){}}
+    }
+    if(!window.firebase||FIREBASE_CONFIG.apiKey.indexOf("여기")===0)throw 0;
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db=firebase.firestore();
+    var timer=setTimeout(function(){offline=true;render()},10000);
+    function sub(col,set){
+      db.collection(col).onSnapshot(function(s){clearTimeout(timer);offline=false;set(s.docs.map(function(d){return Object.assign({id:d.id},d.data())}));render()},function(){clearTimeout(timer);offline=true;render()});
+    }
+    sub("shifts",function(r){shifts=r});
+    sub("menu",function(r){menu=r});
+    sub("attendance",function(r){att=r});
+  }catch(e){offline=true;db=null;render()}
+})();
+</script>
+</body>
+</html>
